@@ -1,21 +1,22 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import './App.css';
 import Post from './Post';
+import {db} from './firebase';
 
 function App() {
-  const [posts,setPosts] = useState([
-    {
-      username:"Roshni" ,
-      caption:"wohooo" ,
-      imageUrl:"https://reactjs.org/logo-og.png"
-    },
-    {
-      username:"its_me",
-      caption:"tadaa",
-      imageUrl:"https://www.fnp.com/images/pr/x/v20210907192911/led-teddy-bear_1.jpg"
-    }
-  ]);
-  
+  const [posts,setPosts] = useState([]);
+
+  useEffect(() => { 
+    db.collection('posts').onSnapshot(snapshot => {
+      setPosts(snapshot.docs.map(doc => (
+        {
+        id:doc.id,
+        post:doc.data()
+      }
+      )));
+    })
+   }, []);
+
   return (
     <div className="app">
       
@@ -27,11 +28,10 @@ function App() {
       </div>
       <h1>instagram clone</h1>
       {
-        posts.map(post => {
-        <Post username={post.username} caption={post.caption} imageUrl={post.imageUrl}/>
-      })}
-      <Post username="Roshni" caption="wohoo" imageUrl="https://reactjs.org/logo-og.png"/>
-      <Post username="its_me" caption="tadaa" imageUrl="https://i.ytimg.com/vi/XOPYNKvc4R0/maxresdefault.jpg"/>
+        posts.map(({id,post}) => (
+        <Post key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl}/>
+        ))}
+      
      {/*header */}
      {/*posts */}
      {/*posts */}
